@@ -3,11 +3,10 @@
 
 static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
 static int centered = 0;                    /* -c option; centers dmenu on screen */
-static int min_width = 400;                    /* 750 minimum width when centered */
+static int min_width = 400;                    /* minimum width when centered */
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
-	"monospace:size=12", //20
-	"NotoEmoji:size=10:"
+	"monospace:size=12"
 };
 static const unsigned int bgalpha = 0xe0;
 static const unsigned int fgalpha = OPAQUE;
@@ -21,12 +20,11 @@ static const char *colors[SchemeLast][2] = {
 static const unsigned int alphas[SchemeLast][2] = {
 	/*		fgalpha		bgalphga	*/
 	[SchemeNorm] = { fgalpha, bgalpha },
-	[SchemeSel] = { fgalpha, bgalpha },
-	[SchemeOut] = { fgalpha, bgalpha },
+	[SchemeSel]  = { fgalpha, bgalpha },
+	[SchemeOut]  = { fgalpha, bgalpha },
 };
-
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
-static unsigned int lines      = 12; //18
+static unsigned int lines      = 12;
 
 /*
  * Characters not considered part of a word while deleting words
