@@ -1,26 +1,17 @@
-diff --git a/config.def.h b/config.def.h
-index 1edb647..47b616d 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -12,6 +12,7 @@ static const char *colors[SchemeLast][2] = {
- 	[SchemeNorm] = { "#bbbbbb", "#222222" },
- 	[SchemeSel] = { "#eeeeee", "#005577" },
- 	[SchemeOut] = { "#000000", "#00ffff" },
-+	[SchemeHp]  = { "#bbbbbb", "#333333" }
- };
- /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
- static unsigned int lines      = 0;
+From 40372ad14389b93fc882f149dc64979842a08e59 Mon Sep 17 00:00:00 2001
+From: Ratakor <contact@ratakor.com>
+Date: Tue, 21 Feb 2023 16:08:11 +0100
+Subject: [PATCH] message
+
+---
+ dmenu.c | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 59 insertions(+), 5 deletions(-)
+
 diff --git a/dmenu.c b/dmenu.c
-index eca67ac..6ae896a 100644
+index 27b7a30..6d1f77f 100644
 --- a/dmenu.c
 +++ b/dmenu.c
-@@ -26,14 +26,16 @@
- #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
- 
- /* enums */
--enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
-+enum { SchemeNorm, SchemeSel, SchemeHp, SchemeOut, SchemeLast }; /* color schemes */
- 
+@@ -31,9 +31,11 @@ enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
  struct item {
  	char *text;
  	struct item *left, *right;
@@ -33,9 +24,9 @@ index eca67ac..6ae896a 100644
  static char text[BUFSIZ] = "";
  static char *embed;
  static int bh, mw, mh;
-@@ -58,6 +60,42 @@ static Clr *scheme[SchemeLast];
- static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
- static char *(*fstrstr)(const char *, const char *) = strstr;
+@@ -53,6 +55,42 @@ static XIC xic;
+ static Drw *drw;
+ static Clr *scheme[SchemeLast];
  
 +static char **
 +tokenize(char *source, const char *delim, int *llen)
@@ -73,29 +64,20 @@ index eca67ac..6ae896a 100644
 +	return 0;
 +}
 +
- static void
- appenditem(struct item *item, struct item **list, struct item **last)
- {
-@@ -97,6 +135,9 @@ cleanup(void)
+ #include "config.h"
+ 
+ static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
+@@ -104,6 +142,9 @@ cleanup(void)
  	XUngrabKey(dpy, AnyKey, AnyModifier, root);
  	for (i = 0; i < SchemeLast; i++)
  		free(scheme[i]);
 +	for (i = 0; i < hplength; ++i)
 +		free(hpitems[i]);
 +	free(hpitems);
- 	drw_free(drw);
- 	XSync(dpy, False);
- 	XCloseDisplay(dpy);
-@@ -125,6 +166,8 @@ drawitem(struct item *item, int x, int y, int w)
- {
- 	if (item == sel)
- 		drw_setscheme(drw, scheme[SchemeSel]);
-+	else if (item->hp)
-+		drw_setscheme(drw, scheme[SchemeHp]);
- 	else if (item->out)
- 		drw_setscheme(drw, scheme[SchemeOut]);
- 	else
-@@ -226,7 +269,7 @@ match(void)
+ 	for (i = 0; items && items[i].text; ++i)
+ 		free(items[i].text);
+ 	free(items);
+@@ -236,7 +277,7 @@ match(void)
  	char buf[sizeof text], *s;
  	int i, tokc = 0;
  	size_t len, textsize;
@@ -104,8 +86,8 @@ index eca67ac..6ae896a 100644
  
  	strcpy(buf, text);
  	/* separate input text into tokens to be matched individually */
-@@ -235,7 +278,7 @@ match(void)
- 			die("cannot realloc %u bytes:", tokn * sizeof *tokv);
+@@ -245,7 +286,7 @@ match(void)
+ 			die("cannot realloc %zu bytes:", tokn * sizeof *tokv);
  	len = tokc ? strlen(tokv[0]) : 0;
  
 -	matches = lprefix = lsubstr = matchend = prefixend = substrend = NULL;
@@ -113,7 +95,7 @@ index eca67ac..6ae896a 100644
  	textsize = strlen(text) + 1;
  	for (item = items; item && item->text; item++) {
  		for (i = 0; i < tokc; i++)
-@@ -243,14 +286,24 @@ match(void)
+@@ -253,14 +294,24 @@ match(void)
  				break;
  		if (i != tokc) /* not all tokens match */
  			continue;
@@ -139,32 +121,25 @@ index eca67ac..6ae896a 100644
  	if (lprefix) {
  		if (matches) {
  			matchend->right = lprefix;
-@@ -553,6 +606,7 @@ readstdin(void)
- 		if (!(items[i].text = strdup(buf)))
- 			die("cannot strdup %u bytes:", strlen(buf) + 1);
+@@ -564,6 +615,7 @@ readstdin(void)
+ 			line[len - 1] = '\0';
+ 		items[i].text = line;
  		items[i].out = 0;
 +		items[i].hp = arrayhas(hpitems, hplength, items[i].text);
- 		drw_font_getexts(drw->fonts, buf, strlen(buf), &tmpmax, NULL);
- 		if (tmpmax > inputw) {
- 			inputw = tmpmax;
-@@ -708,7 +762,8 @@ static void
+ 		line = NULL; /* next call of getline() allocates a new line */
+ 	}
+ 	free(line);
+@@ -714,7 +766,7 @@ setup(void)
+ static void
  usage(void)
  {
- 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
--	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
-+	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n"
-+	      "             [-hb color] [-hf color] [-hp items]\n", stderr);
- 	exit(1);
+-	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++ 	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor] [-hp items]\n"
+ 	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  
-@@ -749,8 +804,14 @@ main(int argc, char *argv[])
- 			colors[SchemeSel][ColBg] = argv[++i];
- 		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */
+@@ -757,6 +809,8 @@ main(int argc, char *argv[])
  			colors[SchemeSel][ColFg] = argv[++i];
-+		else if (!strcmp(argv[i], "-hb"))  /* high priority background color */
-+			colors[SchemeHp][ColBg] = argv[++i];
-+		else if (!strcmp(argv[i], "-hf")) /* low priority background color */
-+			colors[SchemeHp][ColFg] = argv[++i];
  		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
  			embed = argv[++i];
 +		else if (!strcmp(argv[i], "-hp"))
@@ -172,3 +147,6 @@ index eca67ac..6ae896a 100644
  		else
  			usage();
  
+-- 
+2.39.2
+

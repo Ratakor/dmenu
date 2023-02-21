@@ -29,7 +29,7 @@
 #define OPAQUE                0xffU
 
 /* enums */
-enum { SchemeNorm, SchemeSel, SchemeHp, SchemeOut, SchemeNormHighlight, SchemeSelHighlight, SchemeOutHighlight, SchemeLast }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeOut, SchemeNormHighlight, SchemeSelHighlight, SchemeOutHighlight, SchemeLast }; /* color schemes */
 struct item {
 	char *text;
 	struct item *left, *right;
@@ -231,8 +231,6 @@ drawitem(struct item *item, int x, int y, int w)
 	if (item == sel)
 		drw_setscheme(drw, scheme[SchemeSel]);
 	else if (item->hp)
-		drw_setscheme(drw, scheme[SchemeHp]);
-	else if (item->out)
 		drw_setscheme(drw, scheme[SchemeOut]);
 	else
 		drw_setscheme(drw, scheme[SchemeNorm]);
@@ -844,9 +842,8 @@ setup(void)
 static void
 usage(void)
 {
-	die("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n"
-	    "             [-hb color] [-hf color] [-hp items]\n", stderr);
+	die("usage: dmenu [-bcfiv] [-l lines] [-p prompt] [-fn font] [-m monitor] [-hp items]\n"
+	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]", stderr);
 }
 
 int
@@ -888,10 +885,6 @@ main(int argc, char *argv[])
 			colors[SchemeSel][ColBg] = argv[++i];
 		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */
 			colors[SchemeSel][ColFg] = argv[++i];
-		else if (!strcmp(argv[i], "-hb"))  /* high priority background color */
-			colors[SchemeHp][ColBg] = argv[++i];
-		else if (!strcmp(argv[i], "-hf")) /* low priority background color */
-			colors[SchemeHp][ColFg] = argv[++i];
 		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
 			embed = argv[++i];
 		else if (!strcmp(argv[i], "-hp"))
