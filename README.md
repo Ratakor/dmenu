@@ -1,24 +1,29 @@
 # Ratakor's build of dmenu
+- Patches added in 'patches' directory
+- Dracula theme
+- fade with picom (see .local/etc/picom.conf in my dotfiles)
 
-Fork of Luke Smith's dmenu.
+dmenu - dynamic menu
+====================
+dmenu is an efficient dynamic menu for X.
 
-Extra stuff added to vanilla dmenu:
 
-- reads Xresources (ergo pywal compatible)
-- alpha patch, which importantly allows this build to be embedded in transparent st
-- ~~can view color characters like emoji~~
-- `-P` for password mode: hide user input
-- `-r` to reject non-matching input
-- dmenu options are mouse clickable
-- center with -c
-- case insensitive so case sensitive with -s
-- dracula theme
-- borders
+Requirements
+------------
+In order to build dmenu you need the Xlib header files.
 
-- border and fade with picom (see .local/etc/picom.conf in my dotfiles)
 
-## Installation
+Installation
+------------
+Edit config.mk to match your local setup (dmenu is installed into
+the /usr/local namespace by default).
 
-```
-# make clean install
-```
+Afterwards enter the following command to build and install dmenu
+(if necessary as root):
+
+    make clean install
+
+
+Running dmenu
+-------------
+See the man page for details.
