@@ -1,14 +1,14 @@
-From 40372ad14389b93fc882f149dc64979842a08e59 Mon Sep 17 00:00:00 2001
+From 572cffbc38664ee4ad845ff946a04e6a1e0dd4cc Mon Sep 17 00:00:00 2001
 From: Ratakor <contact@ratakor.com>
-Date: Tue, 21 Feb 2023 16:08:11 +0100
-Subject: [PATCH] message
+Date: Tue, 21 Feb 2023 16:33:24 +0100
+Subject: [PATCH] highpriority: remove color changes and update for 5.2
 
 ---
  dmenu.c | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++++-----
  1 file changed, 59 insertions(+), 5 deletions(-)
 
 diff --git a/dmenu.c b/dmenu.c
-index 27b7a30..6d1f77f 100644
+index 27b7a30..5546757 100644
 --- a/dmenu.c
 +++ b/dmenu.c
 @@ -31,9 +31,11 @@ enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
@@ -24,9 +24,9 @@ index 27b7a30..6d1f77f 100644
  static char text[BUFSIZ] = "";
  static char *embed;
  static int bh, mw, mh;
-@@ -53,6 +55,42 @@ static XIC xic;
- static Drw *drw;
- static Clr *scheme[SchemeLast];
+@@ -58,6 +60,42 @@ static Clr *scheme[SchemeLast];
+ static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
+ static char *(*fstrstr)(const char *, const char *) = strstr;
  
 +static char **
 +tokenize(char *source, const char *delim, int *llen)
@@ -64,9 +64,9 @@ index 27b7a30..6d1f77f 100644
 +	return 0;
 +}
 +
- #include "config.h"
- 
- static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
+ static unsigned int
+ textw_clamp(const char *str, unsigned int n)
+ {
 @@ -104,6 +142,9 @@ cleanup(void)
  	XUngrabKey(dpy, AnyKey, AnyModifier, root);
  	for (i = 0; i < SchemeLast; i++)
@@ -134,7 +134,7 @@ index 27b7a30..6d1f77f 100644
  usage(void)
  {
 -	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-+ 	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor] [-hp items]\n"
++	die("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor] [-hp items]\n"
  	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]");
  }
  

@@ -15,10 +15,9 @@ static const char *colors[SchemeLast][2] = {
 	[SchemeNorm]            = { "#f8f8f2", "#282a36" },
 	[SchemeSel]             = { "#f8f8f2", "#6272a4" },
 	[SchemeOut]             = { "#000000", "#00ffff" },
-	[SchemeNormHighlight]   = { "#bd93f9", "#282a36" },
-	[SchemeSelHighlight]    = { "#bd93f9", "#6272a4" },
+	[SchemeNormHighlight]   = { "#ffb86c", "#282a36" },
+	[SchemeSelHighlight]    = { "#ffb86c", "#6272a4" },
 	[SchemeOutHighlight]    = { "#000000", "#00ffff" },
-	[SchemeHp]              = { "#bbbbbb", "#333333" },
 };
 static const unsigned int alphas[SchemeLast][2] = {
 	[SchemeNorm]            = { OPAQUE, alpha },
@@ -27,7 +26,6 @@ static const unsigned int alphas[SchemeLast][2] = {
 	[SchemeNormHighlight]   = { OPAQUE, alpha },
 	[SchemeSelHighlight]    = { OPAQUE, alpha },
 	[SchemeOutHighlight]    = { OPAQUE, alpha },
-	[SchemeHp]              = { OPAQUE, alpha },
 };
 
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
